@@ -178,9 +178,9 @@ class LLFFDataset(Dataset):
                                             'poses_bounds.npy')) # (N_images, 17)
         self.image_paths = sorted(glob.glob(os.path.join(self.root_dir, 'images/*')))
                         # load full resolution image then resize
-        if self.split in ['train', 'val']:
-            assert len(poses_bounds) == len(self.image_paths), \
-                'Mismatch between number of images and number of poses! Please rerun COLMAP!'
+        # if self.split in ['train', 'val']:
+        #    assert len(poses_bounds) == len(self.image_paths), \
+        #        'Mismatch between number of images and number of poses! Please rerun COLMAP!'
 
         poses = poses_bounds[:, :15].reshape(-1, 3, 5) # (N_images, 3, 5)
         self.bounds = poses_bounds[:, -2:] # (N_images, 2)
