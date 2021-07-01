@@ -175,18 +175,22 @@ class LLFFDataset(Dataset):
 
     def read_meta(self):
         poses_bounds = np.load(os.path.join(self.root_dir,
-                                            'poses_bounds.npy')) # (N_images, 17)
+                                            'poses_bounds.npy')) # (N_images, 14)
+        hwf_cxcy = np.load(os.path.join(self.root_dir,
+                                            'hwf_cxcy.npy')) # (1, 5)
         self.image_paths = sorted(glob.glob(os.path.join(self.root_dir, 'images/*')))
                         # load full resolution image then resize
         # if self.split in ['train', 'val']:
         #    assert len(poses_bounds) == len(self.image_paths), \
         #        'Mismatch between number of images and number of poses! Please rerun COLMAP!'
 
-        poses = poses_bounds[:, :15].reshape(-1, 3, 5) # (N_images, 3, 5)
-        self.bounds = poses_bounds[:, -2:] # (N_images, 2)
+        # poses = poses_bounds[:, :15].reshape(-1, 3, 5) # (N_images, 3, 5)
+        poses = poses_bounds[:, :12].reshape(-1, 3, 4) # (N_images, 3, 4)
+        self.bounds = poses_bounds[:, -2:] # (N_images, 2)        
 
         # Step 1: rescale focal length according to training resolution
-        H, W, self.focal = poses[0, :, -1] # original intrinsics, same for all images
+        # H, W, self.focal = poses[0, :, -1] # original intrinsics, same for all images
+        H, W, self.focal = hwf_cxcy[0, 1, 2] # original intrinsics, same for all images
         assert H*self.img_wh[0] == W*self.img_wh[1], \
             f'You must set @img_wh to have the same aspect ratio as ({W}, {H}) !'
         
@@ -195,7 +199,7 @@ class LLFFDataset(Dataset):
         # Step 2: correct poses
         # Original poses has rotation in form "down right back", change to "right up back"
         # See https://github.com/bmild/nerf/issues/34
-        poses = np.concatenate([poses[..., 1:2], -poses[..., :1], poses[..., 2:4]], -1)
+        # poses = np.concatenate([poses[..., 1:2], -poses[..., :1], poses[..., 2:4]], -1)
                 # (N_images, 3, 4) exclude H, W, focal
         self.poses, self.pose_avg = center_poses(poses)
         distances_from_center = np.linalg.norm(self.poses[..., 3], axis=1)
