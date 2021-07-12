@@ -190,7 +190,7 @@ class LLFFDataset(Dataset):
 
         # Step 1: rescale focal length according to training resolution
         # H, W, self.focal = poses[0, :, -1] # original intrinsics, same for all images
-        H, W, self.focal = hwf_cxcy[0].double(), hwf_cxcy[1].double(), hwf_cxcy[2].double() # original intrinsics, same for all images
+        H, W, self.focal = hwf_cxcy[0][0], hwf_cxcy[1][0], hwf_cxcy[2][0] # original intrinsics, same for all images
         assert H*self.img_wh[0] == W*self.img_wh[1], \
             f'You must set @img_wh to have the same aspect ratio as ({W}, {H}) !'
         
@@ -236,7 +236,7 @@ class LLFFDataset(Dataset):
                 img = img.view(3, -1).permute(1, 0) # (h*w, 3) RGB
                 self.all_rgbs += [img]
                 
-                rays_o, rays_d = get_rays(self.directions.double(), c2w.double()) # both (h*w, 3)
+                rays_o, rays_d = get_rays(self.directions, c2w) # both (h*w, 3)
                 if not self.spheric_poses:
                     near, far = 0, 1
                     rays_o, rays_d = get_ndc_rays(self.img_wh[1], self.img_wh[0],
