@@ -190,7 +190,8 @@ class LLFFDataset(Dataset):
 
         # Step 1: rescale focal length according to training resolution
         # H, W, self.focal = poses[0, :, -1] # original intrinsics, same for all images
-        H, W, self.focal = hwf_cxcy[0][0], hwf_cxcy[1][0], hwf_cxcy[2][0] # original intrinsics, same for all images
+        # H, W, self.focal = hwf_cxcy[0, 0], hwf_cxcy[1, 0], hwf_cxcy[2, 0] # original intrinsics, same for all images
+        H, W, self.focal = hwf_cxcy.item(0), hwf_cxcy.item(1), hwf_cxcy.item(2) # original intrinsics, same for all images
         assert H*self.img_wh[0] == W*self.img_wh[1], \
             f'You must set @img_wh to have the same aspect ratio as ({W}, {H}) !'
         
