@@ -236,7 +236,7 @@ class LLFFDataset(Dataset):
                 img = img.view(3, -1).permute(1, 0) # (h*w, 3) RGB
                 self.all_rgbs += [img]
                 
-                rays_o, rays_d = get_rays(self.directions, c2w) # both (h*w, 3)
+                rays_o, rays_d = get_rays(self.directions.double(), c2w.double()) # both (h*w, 3)
                 if not self.spheric_poses:
                     near, far = 0, 1
                     rays_o, rays_d = get_ndc_rays(self.img_wh[1], self.img_wh[0],
