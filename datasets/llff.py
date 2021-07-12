@@ -216,7 +216,7 @@ class LLFFDataset(Dataset):
 
         # ray directions for all pixels, same for all images (same H, W, focal)
         self.directions = \
-            get_ray_directions(self.img_wh[1].double(), self.img_wh[0].double(), self.focal) # (H, W, 3)
+            get_ray_directions(self.img_wh[1], self.img_wh[0], self.focal) # (H, W, 3)
             
         if self.split == 'train': # create buffer of all rays and rgb data
                                   # use first N_images-1 to train, the LAST is val
